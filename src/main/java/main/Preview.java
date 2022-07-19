@@ -124,4 +124,8 @@ public class Preview extends JPanel implements ActionListener
 		this.l = l;
 	}
 	
+	public void setImg(String path) {
+		this.img = new ImageIcon(path).getImage();
+	}
+
 }

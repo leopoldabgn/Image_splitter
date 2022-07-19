@@ -4,7 +4,7 @@ public class Main {
 
 	public Main()
 	{
-		new Window(600, 600);
+		new Window(700, 550);
 	}
 	
 	public static void main(String[] args) 

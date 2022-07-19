@@ -1,5 +1,6 @@
 package main;
 
+import java.awt.BorderLayout;
 import java.awt.Component;
 import java.awt.Container;
 import java.awt.Dimension;
@@ -28,10 +29,11 @@ public class SplitterPan extends JPanel
 
 	private JPanel pan1 = new JPanel(),
 				   pan2 = new JPanel(),
-				   pan3 = new JPanel();
+				   pan3 = new JPanel(),
+				   pan4 = new JPanel();
 	
-	private JButton parcourir = new JButton("Parcourir..."),
-					validate = new JButton("Validate");
+	private JButton parcourir = new JButton("Browse..."),
+					validate = new JButton("Split !");
 	
 	private JLabel path = new JLabel();
 	
@@ -45,14 +47,16 @@ public class SplitterPan extends JPanel
 	
 	public SplitterPan()
 	{
-		super();
+		this.setLayout(new BorderLayout());
 		
-		this.setLayout(new GridLayout(2,1));
-		
+		JPanel tmp = new JPanel();
+
 		pan1.add(new JLabel("Select an image :"));
 		pan1.add(path);
 		pan1.add(parcourir);
 		
+		pan1.setPreferredSize(new Dimension(pan1.getWidth(), 55));
+
 		edit1.setPreferredSize(new Dimension(35,22));
 		edit1.setText("3");
 		edit2.setPreferredSize(new Dimension(35,22));
@@ -71,17 +75,26 @@ public class SplitterPan extends JPanel
 	    slider2.setPaintLabels(true);
 	    slider2.setMinorTickSpacing(1);
 	    slider2.setMajorTickSpacing(2);
+
 		pan2.add(edit1);
 		pan2.add(new JLabel("x"));
 		pan2.add(edit2);
-		pan2.add(slider1);
-		pan2.add(slider2);
+
+		pan3.setLayout(new GridLayout(4, 1));
+		pan3.add(pan2);
+		tmp.add(slider1);
+		pan3.add(tmp);
+		tmp = new JPanel();
+		tmp.add(slider2);
+		pan3.add(tmp);
+		tmp = new JPanel();
+		tmp.add(validate);
+		pan3.add(tmp);	
 		
-		pan3.add(validate);		
-		
-		this.add(pan1);
-		this.add(pan2);
-		this.add(pan3);
+		this.add(pan1, BorderLayout.NORTH);
+		tmp = new JPanel();
+		tmp.add(pan3);
+		this.add(tmp, BorderLayout.CENTER);
 		
 		SplitterPan self = this;
 		
@@ -95,17 +108,21 @@ public class SplitterPan extends JPanel
 				
 				path.setText(f.getAbsolutePath());
 				
-				if(containsComponent(self, previewPan))
-					self.remove(previewPan);
-				
-				previewPan = new Preview(self, f.getAbsolutePath(), 350, 350);
-				self.add(previewPan);
+				if(previewPan == null) {
+					previewPan = new Preview(self, f.getAbsolutePath(), 350, 350);
+					JPanel tmp = new JPanel();
+					tmp.add(previewPan);
+					self.add(tmp, BorderLayout.EAST);
+				}
+				else {
+					previewPan.setImg(f.getAbsolutePath());
+				}
 			}
 		});
 		
 		validate.addActionListener(new ActionListener() {
 			public void actionPerformed(ActionEvent e) {
-				if(!path.getText().equals(""))
+				if(path != null && !path.getText().isBlank())
 					saveImages(cutImg(path.getText(), Integer.parseInt(edit1.getText()), 
 							   Integer.parseInt(edit2.getText())));
 			}
@@ -214,7 +231,8 @@ public class SplitterPan extends JPanel
 		int w = (int) Math.floor((float)img.getWidth(null)/c);
 		int h = (int) Math.floor((float)img.getHeight(null)/l);
 		
-		System.out.println("w: "+w+" h: "+h);
+		System.out.println(imgPath+" :");
+		System.out.println("Images size: w: "+w+" h: "+h);
 		
 		/*for(int j=0;j<c;j++)
 		{
@@ -240,14 +258,14 @@ public class SplitterPan extends JPanel
 	{
 		if(images == null)
 			return;
-		File folder = new File(getFolderPath("images/img"));
+		File folder = new File(getFolderPath("images"+File.separator+"img"));
 		if(!folder.exists() || folder.isFile())
 			folder.mkdirs();
-			
+		
 		for(int i=0;i<images.length;i++)
 		{
 			try {
-				ImageIO.write(images[i], "jpg", new File(folder.getAbsolutePath()+"\\"+(i+1)+".jpg"));
+				ImageIO.write(images[i], "jpg", new File(folder.getAbsolutePath()+File.separator+(i+1)+".jpg"));
 			} catch (IOException e) {
 				e.printStackTrace();
 			}
