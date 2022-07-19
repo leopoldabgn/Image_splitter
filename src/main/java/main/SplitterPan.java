@@ -29,8 +29,7 @@ public class SplitterPan extends JPanel
 
 	private JPanel pan1 = new JPanel(),
 				   pan2 = new JPanel(),
-				   pan3 = new JPanel(),
-				   pan4 = new JPanel();
+				   pan3 = new JPanel();
 	
 	private JButton parcourir = new JButton("Browse..."),
 					validate = new JButton("Split !");
